@@ -236,3 +236,7 @@ def overwrite_configs(
         for c, o in tuples
         if o != "remove"
     ]
+
+
+if not is_pydantic_2:
+    ValueContext.update_forward_refs()

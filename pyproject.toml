@@ -1,6 +1,6 @@
 [project]
 name = "bmsdna-table-rendering"
-version = "0.3.7"
+version = "0.3.8"
 description = ""
 authors = [{ name = "Adrian Ehrsam", email = "adrian.ehrsam@bmsuisse.ch" }]
 dependencies = [
