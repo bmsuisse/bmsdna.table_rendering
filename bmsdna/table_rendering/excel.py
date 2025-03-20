@@ -1,7 +1,16 @@
 from datetime import datetime
 import os
 from pathlib import Path
-from typing import Callable, Any, TYPE_CHECKING, Iterable, Literal, Mapping, Sequence
+from typing import (
+    Callable,
+    Any,
+    TYPE_CHECKING,
+    Iterable,
+    Literal,
+    Mapping,
+    Sequence,
+    cast,
+)
 from typing_extensions import NotRequired, TypedDict
 from uuid import uuid4
 import json
@@ -118,13 +127,14 @@ def render_into_sheet(
                 ws.write(row_ind, i, value, formats[i])
 
     assert ws.name is not None
-    if not table_name:
-        table_name = ws.name.replace(" ", "_")
+    if table_name is None:
+        t_name = ws.name.replace(" ", "_")
         existing_names = set(t["name"].lower() for t in ws.tables if t.get("name"))
         cnt = 2
-        while table_name.lower() in existing_names:
-            table_name = ws.name.replace(" ", "_") + "_" + str(cnt)
+        while t_name.lower() in existing_names:
+            t_name = ws.name.replace(" ", "_") + "_" + str(cnt)
             cnt += 1
+        table_name = t_name
     ws.add_table(
         offset_rows,
         0,
