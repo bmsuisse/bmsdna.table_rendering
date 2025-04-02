@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 import os
 import polars as pl
 
@@ -13,11 +13,13 @@ def test_excel():
                 "first_name": "hans",
                 "last_name": "muster",
                 "age": 30,
+                "dt": datetime.now(tz=timezone.utc),
             },
             {
                 "first_name": "max",
                 "last_name": "mustermann",
                 "age": 40,
+                "dt": datetime.now(tz=timezone.utc),
             },
         ]
     )
