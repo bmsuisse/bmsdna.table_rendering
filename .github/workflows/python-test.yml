@@ -15,6 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.11"]
+        pydantic_version: ["1", "2"]
 
     steps:
       - uses: actions/checkout@v3
@@ -26,6 +27,11 @@ jobs:
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install project dependencies
         run: uv sync --all-extras --group test --group dev
+      - name: Install pydantic ${{ matrix.pydantic_version }}
+        if: ${{ matrix.pydantic_version == '1' }}
+        run: |
+          uv remove pydantic
+          uv add pydantic<2
       - name: Pyright
         run: uv run pyright bmsdna
       - name: Test with pytest
