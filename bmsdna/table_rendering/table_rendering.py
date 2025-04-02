@@ -153,12 +153,16 @@ class TableRenderer:
 def create_excel(
     sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
     excel: Path | None,
+    *,
+    workbook_options: dict | None = None,
 ) -> Path: ...
 
 
 @overload
 def create_excel(
     sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
+    *,
+    workbook_options: dict | None = None,
 ) -> Path: ...
 
 
@@ -172,6 +176,8 @@ def create_excel(
 def create_excel(
     sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
     excel: "Path | Workbook | None" = None,
+    *,
+    workbook_options: dict | None = None,
 ) -> Path | None:
     if excel is None:
         excel = Path(os.getenv("TEMP", "/tmp")) / f"{str(uuid4())}.xlsx"
@@ -186,7 +192,13 @@ def create_excel(
             wb = excel
             path = None
         else:
-            wb = Workbook(excel)
+            wb = Workbook(
+                excel,
+                workbook_options
+                or {
+                    "remove_timezone": True,
+                },
+            )
             path = excel
 
         for sheet_name, tpl in sheets.items():
