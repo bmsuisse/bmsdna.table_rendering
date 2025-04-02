@@ -208,6 +208,8 @@ def overwrite_configs(
             return config
         if isinstance(overwrite, ColumnConfig):
             return overwrite
+        if not is_pydantic_2:
+            return config.copy(update=overwrite)  # type: ignore
         return config.model_copy(update=overwrite)  # type: ignore
 
     tuples = [
