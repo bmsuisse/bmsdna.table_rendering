@@ -82,7 +82,12 @@ def markdown_to_excel(
             if m := re_markdown_image.match(col):
                 ws.insert_image(offset_rows + row, col_ind, m.group(2))
             elif m := re_markdown_link.match(col):
-                ws.write_url(offset_rows + row, col_ind, m.group(1), string=m.group(2))
+                url = m.group(2)
+                text = m.group(1)
+                if "://" in text and "://" not in url:
+                    text, url = url, text
+
+                ws.write_url(offset_rows + row, col_ind, url, string=text)
             elif (
                 col.startswith("# ")
                 or col.startswith("## ")
