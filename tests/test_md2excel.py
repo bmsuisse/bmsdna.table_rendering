@@ -2,7 +2,7 @@ text = """# Ein Titel
 
 Wir haben hier einen Text
 
-[https://google.com]( - Ein link)
+[ - Ein link](https://google.com)
 
 | Month    | Savings |
 | -------- | ------- |
