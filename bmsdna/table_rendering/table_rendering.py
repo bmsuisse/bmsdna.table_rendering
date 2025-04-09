@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from xlsxwriter.worksheet import Worksheet
     from xlsxwriter.workbook import Workbook
     import polars as pl
+    from pyspark.sql import DataFrame as SparkDataFrame
 
 
 class TableRenderer:
@@ -38,6 +39,16 @@ class TableRenderer:
     ):
         self.configs = configs
         self.translator = translator
+
+    @classmethod
+    def from_spark(
+        cls,
+        data: "SparkDataFrame",
+        translator: Callable[[str, str], str] | None = None,
+    ):
+        from .spark import configs_from_pyspark
+
+        return cls(configs_from_pyspark(data), translator=translator)
 
     @classmethod
     def from_df(
@@ -108,7 +119,7 @@ class TableRenderer:
 
     def render_html(
         self,
-        data: "Iterable[dict] | pl.DataFrame",
+        data: "Iterable[dict] | pl.DataFrame | SparkDataFrame",
         *,
         add_classes: Sequence[str] | None = None,
         styles: str | dict[str, str] = "",
@@ -131,7 +142,7 @@ class TableRenderer:
         self,
         ws: "Worksheet",
         wb: "Workbook",
-        data: "Iterable[dict] | pl.DataFrame",
+        data: "Iterable[dict] | pl.DataFrame | SparkDataFrame",
         sheet_options: SheetOptions = {},
         *,
         offset_rows: int = 0,
@@ -151,7 +162,7 @@ class TableRenderer:
 
 @overload
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame | SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     excel: Path | None,
     *,
     workbook_options: dict | None = None,
@@ -160,7 +171,7 @@ def create_excel(
 
 @overload
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     *,
     workbook_options: dict | None = None,
 ) -> Path: ...
@@ -168,13 +179,13 @@ def create_excel(
 
 @overload
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     excel: "Workbook",
 ) -> None: ...
 
 
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     excel: "Path | Workbook | None" = None,
     *,
     workbook_options: dict | None = None,

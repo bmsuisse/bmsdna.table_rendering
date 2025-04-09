@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from xlsxwriter.worksheet import Worksheet
     from xlsxwriter.workbook import Workbook
     import polars as pl
+    from pyspark.sql import DataFrame as SparkDataFrame
 
 
 class SheetOptions(TypedDict):
@@ -36,7 +37,7 @@ class SheetOptions(TypedDict):
 
 def render_into_sheet(
     configs: Sequence[ColumnConfig],
-    data: "Iterable[dict] | pl.DataFrame",
+    data: "Iterable[dict] | pl.DataFrame| SparkDataFrame",
     ws: "Worksheet",
     wb: "Workbook",
     sheet_options: SheetOptions = {},
@@ -46,16 +47,28 @@ def render_into_sheet(
     autofit=True,
     table_name: str | None = None,
 ) -> "Worksheet":
-    try:
-        import polars as pl
+    data_iter: Iterable[dict] | None = None
+    if data is None:
+        data_iter = []
+    if data_iter is None:
+        try:
+            from pyspark.sql import DataFrame as SparkDataFrame
 
-        if isinstance(data, pl.DataFrame):
-            data_iter: Iterable[dict] = data.iter_rows(named=True)
-        else:
-            data_iter: Iterable[dict] = data
-    except ImportError:
-        data_iter: Iterable[dict] = data  # type: ignore
+            if isinstance(data, SparkDataFrame):
+                data_iter = (d.asDict(True) for d in data.collect())
+        except ImportError:
+            pass
+    if data_iter is None:
+        try:
+            import polars as pl
 
+            if isinstance(data, pl.DataFrame):
+                data_iter = data.iter_rows(named=True)
+            else:
+                data_iter = cast(list[dict], data)
+        except ImportError:
+            data_iter = data  # type: ignore
+    assert data_iter is not None, f"Unknown data type for data: {type(data)}"
     import xlsxwriter
 
     ws.write_row(

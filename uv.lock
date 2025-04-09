@@ -12,13 +12,18 @@ wheels = [
 
 [[package]]
 name = "bmsdna-table-rendering"
-version = "0.3.11"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "dominate" },
     { name = "polars" },
     { name = "pydantic" },
     { name = "xlsxwriter" },
+]
+
+[package.optional-dependencies]
+spark = [
+    { name = "pyspark" },
 ]
 
 [package.dev-dependencies]
@@ -40,6 +45,7 @@ requires-dist = [
     { name = "dominate", specifier = ">=2.9.1,<3" },
     { name = "polars", specifier = ">=1.0.0,<2" },
     { name = "pydantic", specifier = ">=1.10" },
+    { name = "pyspark", marker = "extra == 'spark'", specifier = ">=3.5.5" },
     { name = "xlsxwriter", specifier = ">=3.2.0,<4" },
 ]
 
@@ -156,6 +162,15 @@ wheels = [
 ]
 
 [[package]]
+name = "py4j"
+version = "0.10.9.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/f2/b34255180c72c36ff7097f7c2cdca02abcbd89f5eebf7c7c41262a9a0637/py4j-0.10.9.7.tar.gz", hash = "sha256:0b6e5315bb3ada5cf62ac651d107bb2ebc02def3dee9d9548e3baac644ea8dbb", size = 1508234 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/30/a58b32568f1623aaad7db22aa9eafc4c6c194b429ff35bdc55ca2726da47/py4j-0.10.9.7-py2.py3-none-any.whl", hash = "sha256:85defdfd2b2376eb3abf5ca6474b51ab7e0de341c75a02f46dc9b5976f5a5c1b", size = 200481 },
+]
+
+[[package]]
 name = "pydantic"
 version = "2.10.4"
 source = { registry = "https://pypi.org/simple" }
@@ -256,6 +271,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/b1/e4/79f4d8a342eed6790
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d6/4c/50c74e3d589517a9712a61a26143b587dba6285434a17aebf2ce6b82d2c3/pyright-1.1.394-py3-none-any.whl", hash = "sha256:5f74cce0a795a295fb768759bbeeec62561215dea657edcaab48a932b031ddbb", size = 5679540 },
 ]
+
+[[package]]
+name = "pyspark"
+version = "3.5.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "py4j" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5f/8f/b616ef710932ccdbabd8511e08890a677482ab2967b7cf276c09a02bc64c/pyspark-3.5.5.tar.gz", hash = "sha256:6effc9ce98edf231f4d683fd14f7270629bf8458c628d6a2620ded4bb34f3cb9", size = 317214975 }
 
 [[package]]
 name = "pytest"
