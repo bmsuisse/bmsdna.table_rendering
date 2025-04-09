@@ -1,14 +1,15 @@
-from typing import Sequence, TYPE_CHECKING, Iterable, Callable
+from typing import Sequence, TYPE_CHECKING, Iterable, Callable, cast
 import json
 from bmsdna.table_rendering.config import ColumnConfig, ValueContext, format_value
 
 if TYPE_CHECKING:
     import polars as pl
+    from pyspark.sql import DataFrame as SparkDataFrame
 
 
 def render_html(
     configs: Sequence[ColumnConfig],
-    data: "Iterable[dict] | pl.DataFrame",
+    data: "Iterable[dict] | pl.DataFrame | SparkDataFrame",
     *,
     translator: Callable[[str, str], str] | None = None,
     add_classes: Sequence[str] | None = None,
@@ -16,16 +17,29 @@ def render_html(
     tr_styles: str | dict[str, str] = "",
     td_styles: str | dict[str, str] = "",
 ):
-    try:
-        import polars as pl
+    data_iter: Iterable[dict] | None = None
+    if data is None:
+        data_iter = []
+    if data_iter is None:
+        try:
+            from pyspark.sql import DataFrame as SparkDataFrame
 
-        if isinstance(data, pl.DataFrame):
-            data_iter: Iterable[dict] = data.iter_rows(named=True)
-        else:
-            data_iter: Iterable[dict] = data
-    except ImportError:
-        data_iter: Iterable[dict] = data  # type: ignore
+            if isinstance(data, SparkDataFrame):
+                data_iter = (d.asDict(True) for d in data.collect())
+        except ImportError:
+            pass
+    if data_iter is None:
+        try:
+            import polars as pl
 
+            if isinstance(data, pl.DataFrame):
+                data_iter = data.iter_rows(named=True)
+            else:
+                data_iter = cast(list[dict], data)
+        except ImportError:
+            data_iter = data  # type: ignore
+
+    assert data_iter is not None, f"Unknown data type for data: {type(data)}"
     from dominate.tags import table, thead, tr, td, th, a, tbody
 
     tbl = table()
