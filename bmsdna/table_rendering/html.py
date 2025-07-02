@@ -5,11 +5,12 @@ from bmsdna.table_rendering.config import ColumnConfig, ValueContext, format_val
 if TYPE_CHECKING:
     import polars as pl
     from pyspark.sql import DataFrame as SparkDataFrame
+    from pyspark.sql.connect.dataframe import DataFrame as SparkConnectDataFrame
 
 
 def render_html(
     configs: Sequence[ColumnConfig],
-    data: "Iterable[dict] | pl.DataFrame | SparkDataFrame",
+    data: "Iterable[dict] | pl.DataFrame | SparkDataFrame|SparkConnectDataFrame",
     *,
     translator: Callable[[str, str], str] | None = None,
     add_classes: Sequence[str] | None = None,
@@ -25,6 +26,13 @@ def render_html(
             from pyspark.sql import DataFrame as SparkDataFrame
 
             if isinstance(data, SparkDataFrame):
+                data_iter = (d.asDict(True) for d in data.collect())
+        except ImportError:
+            pass
+        try:
+            from pyspark.sql.connect.dataframe import DataFrame as SparkConnectDataFrame
+
+            if isinstance(data, SparkConnectDataFrame):
                 data_iter = (d.asDict(True) for d in data.collect())
         except ImportError:
             pass

@@ -3,9 +3,10 @@ from bmsdna.table_rendering.config import ColumnConfig
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame
+    from pyspark.sql.connect.dataframe import DataFrame as SparkConnectDataFrame
 
 
-def configs_from_pyspark(df: "DataFrame"):
+def configs_from_pyspark(df: "DataFrame|SparkConnectDataFrame"):
     from pyspark.sql.types import (
         DateType,
         TimestampType,

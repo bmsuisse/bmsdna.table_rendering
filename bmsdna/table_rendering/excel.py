@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from xlsxwriter.workbook import Workbook
     import polars as pl
     from pyspark.sql import DataFrame as SparkDataFrame
+    from pyspark.sql.connect.dataframe import DataFrame as SparkConnectDataFrame
 
 
 class SheetOptions(TypedDict):
@@ -37,7 +38,7 @@ class SheetOptions(TypedDict):
 
 def render_into_sheet(
     configs: Sequence[ColumnConfig],
-    data: "Iterable[dict] | pl.DataFrame| SparkDataFrame",
+    data: "Iterable[dict] | pl.DataFrame| SparkDataFrame|SparkConnectDataFrame",
     ws: "Worksheet",
     wb: "Workbook",
     sheet_options: SheetOptions = {},
@@ -55,6 +56,13 @@ def render_into_sheet(
             from pyspark.sql import DataFrame as SparkDataFrame
 
             if isinstance(data, SparkDataFrame):
+                data_iter = (d.asDict(True) for d in data.collect())
+        except ImportError:
+            pass
+        try:
+            from pyspark.sql.connect.dataframe import DataFrame as SparkConnectDataFrame
+
+            if isinstance(data, SparkConnectDataFrame):
                 data_iter = (d.asDict(True) for d in data.collect())
         except ImportError:
             pass
