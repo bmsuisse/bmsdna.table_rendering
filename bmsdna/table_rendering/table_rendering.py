@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from xlsxwriter.workbook import Workbook
     import polars as pl
     from pyspark.sql import DataFrame as SparkDataFrame
+    from pyspark.sql.connect.dataframe import DataFrame as SparkConnectDataFrame
 
 
 class TableRenderer:
@@ -43,7 +44,7 @@ class TableRenderer:
     @classmethod
     def from_spark(
         cls,
-        data: "SparkDataFrame",
+        data: "SparkDataFrame|SparkConnectDataFrame",
         translator: Callable[[str, str], str] | None = None,
     ):
         from .spark import configs_from_pyspark
@@ -119,7 +120,7 @@ class TableRenderer:
 
     def render_html(
         self,
-        data: "Iterable[dict] | pl.DataFrame | SparkDataFrame",
+        data: "Iterable[dict] | pl.DataFrame | SparkDataFrame|SparkConnectDataFrame",
         *,
         add_classes: Sequence[str] | None = None,
         styles: str | dict[str, str] = "",
@@ -142,7 +143,7 @@ class TableRenderer:
         self,
         ws: "Worksheet",
         wb: "Workbook",
-        data: "Iterable[dict] | pl.DataFrame | SparkDataFrame",
+        data: "Iterable[dict] | pl.DataFrame | SparkDataFrame|SparkConnectDataFrame",
         sheet_options: SheetOptions = {},
         *,
         offset_rows: int = 0,
