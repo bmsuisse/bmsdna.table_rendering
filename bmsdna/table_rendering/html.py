@@ -43,7 +43,7 @@ def render_html(
             if isinstance(data, pl.DataFrame):
                 data_iter = data.iter_rows(named=True)
             else:
-                data_iter = cast(list[dict], data)
+                data_iter = cast(Sequence[dict], data)
         except ImportError:
             data_iter = data  # type: ignore
 

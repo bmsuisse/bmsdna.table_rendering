@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Literal, Union, Callable, Mapping
+from typing import Any, Iterable, Literal, Sequence, Callable, Mapping
 from typing_extensions import TypedDict, NotRequired, TypeAlias
 from pydantic import BaseModel
 
@@ -84,7 +84,7 @@ class ColumnConfig(BaseModel):
     text_wrap: bool = False
 
     searchable: bool = True
-    search_field: str | list[str] | None = None
+    search_field: str | Sequence[str] | None = None
 
     hide: bool | Literal["mobile"] = False
 

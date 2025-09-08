@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 class TableRenderer:
     def __init__(
         self,
-        configs: list[ColumnConfig],
+        configs: Sequence[ColumnConfig],
         translator: Callable[[str, str], str] | None = None,
     ):
         self.configs = configs
@@ -100,7 +100,7 @@ class TableRenderer:
                         concat_str += str(ctx.row[c.field]) + " "
             return concat_str.removesuffix(" ")
 
-        new_cfgs = self.configs.copy()
+        new_cfgs = list(self.configs)
 
         index = 0
         for c in self.configs:
@@ -163,7 +163,7 @@ class TableRenderer:
 
 @overload
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame | SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, Sequence[dict]| pl.DataFrame | SparkDataFrame]|tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     excel: Path | None,
     *,
     workbook_options: dict | None = None,
@@ -172,7 +172,7 @@ def create_excel(
 
 @overload
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     *,
     workbook_options: dict | None = None,
 ) -> Path: ...
@@ -180,13 +180,13 @@ def create_excel(
 
 @overload
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     excel: "Workbook",
 ) -> None: ...
 
 
 def create_excel(
-    sheets: "Mapping[str, tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, list[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
+    sheets: "Mapping[str, tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame]|tuple[TableRenderer, Sequence[dict]| pl.DataFrame| SparkDataFrame, SheetOptions]]",
     excel: "Path | Workbook | None" = None,
     *,
     workbook_options: dict | None = None,
