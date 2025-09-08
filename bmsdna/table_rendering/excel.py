@@ -73,7 +73,7 @@ def render_into_sheet(
             if isinstance(data, pl.DataFrame):
                 data_iter = data.iter_rows(named=True)
             else:
-                data_iter = cast(list[dict], data)
+                data_iter = cast(Sequence[dict], data)
         except ImportError:
             data_iter = data  # type: ignore
     assert data_iter is not None, f"Unknown data type for data: {type(data)}"
