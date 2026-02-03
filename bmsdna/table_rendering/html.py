@@ -1,4 +1,4 @@
-from typing import Sequence, TYPE_CHECKING, Iterable, Callable, cast
+from typing import Sequence, TYPE_CHECKING, Iterable, Callable, cast, Any
 import json
 from bmsdna.table_rendering.config import ColumnConfig, ValueContext, format_value
 
@@ -15,7 +15,7 @@ def render_html(
     translator: Callable[[str, str], str] | None = None,
     add_classes: Sequence[str] | None = None,
     styles: str | dict[str, str] = "",
-    tr_styles: str | dict[str, str] = "",
+    tr_styles: str | dict[str, str] | Callable[[Any], str | dict[str, str]] = "",
     td_styles: str | dict[str, str] = "",
 ):
     data_iter: Iterable[dict] | None = None
@@ -63,10 +63,14 @@ def render_html(
         for row in data_iter:
             with tbody.add(tr()) as tr_:
                 if tr_styles:
+                    if callable(tr_styles):
+                        ts = tr_styles(row)
+                    else:
+                        ts = tr_styles
                     tr_.attributes["style"] = (
-                        tr_styles
-                        if isinstance(tr_styles, str)
-                        else "; ".join((k + ": " + v for k, v in tr_styles.items()))
+                        ts
+                        if isinstance(ts, str)
+                        else "; ".join((k + ": " + v for k, v in ts.items()))
                     )
                 for config in configs:
                     if config.hide == True:
