@@ -96,14 +96,14 @@ def render_html(
                             td_.add_raw_string(value)  # type: ignore
                             if td_styles:
                                 if callable(td_styles):
-                                    ts = td_styles(row)
+                                    tsd = td_styles(row)
                                 else:
-                                    ts = td_styles
+                                    tsd = td_styles
                                 td_["style"] = (  # type: ignore
-                                    ts
-                                    if isinstance(ts, str)
+                                    tsd
+                                    if isinstance(tsd, str)
                                     else "; ".join(
-                                        (k + ": " + v for k, v in ts.items())
+                                        (k + ": " + v for k, v in tsd.items())
                                     )
                                 )
 
