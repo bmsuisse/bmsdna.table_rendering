@@ -124,8 +124,8 @@ class TableRenderer:
         *,
         add_classes: Sequence[str] | None = None,
         styles: str | dict[str, str] = "",
-        tr_styles: str | dict[str, str] = "",
-        td_styles: str | dict[str, str] = "",
+        tr_styles: str | dict[str, str] | Callable[[Any], str | dict[str, str]] = "",
+        td_styles: str | dict[str, str]  | Callable[[Any], str | dict[str, str]]= "",
     ):
         from .html import render_html
 

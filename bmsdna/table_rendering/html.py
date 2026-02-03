@@ -16,7 +16,7 @@ def render_html(
     add_classes: Sequence[str] | None = None,
     styles: str | dict[str, str] = "",
     tr_styles: str | dict[str, str] | Callable[[Any], str | dict[str, str]] = "",
-    td_styles: str | dict[str, str] = "",
+    td_styles: str | dict[str, str] | Callable[[Any], str | dict[str, str]] = "",
 ):
     data_iter: Iterable[dict] | None = None
     if data is None:
@@ -95,11 +95,15 @@ def render_html(
                             )
                             td_.add_raw_string(value)  # type: ignore
                             if td_styles:
+                                if callable(td_styles):
+                                    tsd = td_styles(row)
+                                else:
+                                    tsd = td_styles
                                 td_["style"] = (  # type: ignore
-                                    td_styles
-                                    if isinstance(td_styles, str)
+                                    tsd
+                                    if isinstance(tsd, str)
                                     else "; ".join(
-                                        (k + ": " + v for k, v in td_styles.items())
+                                        (k + ": " + v for k, v in tsd.items())
                                     )
                                 )
 
@@ -146,10 +150,14 @@ def render_html(
                         ),
                     )
                     if td_styles:
+                        if callable(td_styles):
+                            tsd = td_styles(row)
+                        else:
+                            tsd = td_styles
                         td_["style"] = (  # type: ignore
-                            td_styles
-                            if isinstance(td_styles, str)
-                            else "; ".join((k + ": " + v for k, v in td_styles.items()))
+                            tsd
+                            if isinstance(tsd, str)
+                            else "; ".join((k + ": " + v for k, v in tsd.items()))
                         )
                     tr_.add(td_)
     if add_classes:
