@@ -1,6 +1,6 @@
 import polars as pl
 
-from bmsdna.table_rendering import TableRenderer
+from bmsdna.table_rendering import TableRenderer, ColumnConfig
 
 
 def test_render_html_tr_styles_callable():
@@ -14,9 +14,7 @@ def test_render_html_tr_styles_callable():
 
     html = rend.render_html(
         fake_data,
-        tr_styles=lambda row: {
-            "background-color": "red" if row["a"] == 1 else "blue"
-        },
+        tr_styles=lambda row: {"background-color": "red" if row["a"] == 1 else "blue"},
     )
 
     assert "background-color: red" in html
@@ -42,3 +40,27 @@ def test_render_html_tr_styles_callable():
         tr_styles=green_dict,
     )
     assert "background-color: green" in html4
+
+
+def test_render_html_links():
+    fake_data = pl.DataFrame(
+        data=[
+            {"id": 1, "name": "Alice"},
+            {"id": 2, "name": "Bob"},
+        ]
+    )
+    rend = TableRenderer(
+        [
+            ColumnConfig(
+                field="name",
+                link=lambda value, _: f"https://example.com/users/{value.lower()}",
+                header_key="tester",
+            )
+        ],
+        translator=lambda key, _: {"tester": "Name"}[key],
+    )
+
+    html = rend.render_html(fake_data)
+
+    assert '<a href="https://example.com/users/alice">Alice</a>' in html
+    assert '<a href="https://example.com/users/bob">Bob</a>' in html
